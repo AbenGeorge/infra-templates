@@ -1,0 +1,24 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: example-com
+  namespace: gcp-cert-manager
+spec:
+  secretName: example-cert
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS1
+    size: 2048
+    rotationPolicy: Always
+  duration: 2h # 30d
+  renewBefore: 1h # 1d
+  subject:
+    organizations:
+      - PolygonLabs
+  isCA: false
+  issuerRef:
+    # The issuer created previously
+    name: example-cluster-issuer-nginx
+    kind: ClusterIssuer
+  dnsNames:
+  - "*.searce-aben.com"

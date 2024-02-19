@@ -1,0 +1,65 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: neo1
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+    name: http 
+  selector:
+    app: neo1
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: neo1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: neo1
+  template:
+    metadata:
+      labels:
+        app: neo1
+    spec:
+      containers:
+      - name: whereami
+        image: us-docker.pkg.dev/google-samples/containers/gke/whereami:v1.2.20
+        ports:
+          - name: http
+            containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+            scheme: HTTP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: gke-ingress
+  annotations:
+    kubernetes.io/ingress.class: gce
+    cert-manager.io/issuer: prod-issuer
+    kubernetes.io/ingress.global-static-ip-name: sk-cert
+spec:
+  tls:
+  - hosts:
+    - gke-web.searce-aben.com
+    secretName: cert-secret
+  rules:
+  - host: gke-web.searce-aben.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: neo1
+            port:
+              number: 80

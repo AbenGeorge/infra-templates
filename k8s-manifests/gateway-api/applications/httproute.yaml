@@ -1,0 +1,26 @@
+kind: HTTPRoute
+apiVersion: gateway.networking.k8s.io/v1beta1
+metadata:
+  name: gateway-routes
+spec:
+  parentRefs:
+    - kind: Gateway
+      name: external-http
+  hostnames:
+    - "gateway.searce-aben.com"
+  rules:
+    - backendRefs:
+        - name: un
+          port: 8080
+    - matches:
+        - path:
+            value: /number/duo
+      backendRefs:
+        - name: duo
+          port: 8080
+    - matches:
+        - path:
+            value: /numero/tres
+      backendRefs:
+        - name: tres
+          port: 8080

@@ -1,0 +1,22 @@
+  apiVersion: gateway.networking.k8s.io/v1beta1
+  kind: HTTPRoute
+  metadata:
+    name: path-redirect
+  spec:
+    parentRefs:
+      - kind: Gateway
+        name: external-http
+    hostnames:
+    - "gateway.searce-aben.com"
+    rules:
+    - matches:
+      - path:
+          type: PathPrefix
+          value: /number
+      filters:
+      - type: RequestRedirect
+        requestRedirect:
+          path:
+            type: ReplaceFullPath
+            replaceFullPath: /numero
+          statusCode: 302

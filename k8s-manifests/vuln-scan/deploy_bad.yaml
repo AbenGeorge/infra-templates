@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: deb-httpd
+spec:
+  selector:
+    app: deb-httpd
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deb-httpd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: deb-httpd
+  template:
+    metadata:
+      labels:
+        app: deb-httpd
+      annotations:
+        alpha.image-policy.k8s.io/break-glass: "true"
+    spec:
+      containers:
+      - name: deb-httpd
+        image: europe-west1-docker.pkg.dev/prj-icici-26/test-repo/sample-image:bad@sha256:aa4ce17d4c934c7548f91da8225367f87552326eff689bbcf2da44ec6ab8f94e
+        ports:
+        - containerPort: 8080
+        env:
+          - name: PORT
+            value: "8080"
+

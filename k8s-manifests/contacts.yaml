@@ -1,0 +1,10 @@
+allContacts:
+  email: 'aben.george@searce.com'
+  phoneNumber: '+91.9778378120'
+  postalAddress:
+    regionCode: 'US'
+    postalCode: '94043'
+    administrativeArea: 'CA'
+    locality: 'Mountain View'
+    addressLines: ['1600 Amphitheatre Pkwy']
+    recipients: ['Jane Doe']

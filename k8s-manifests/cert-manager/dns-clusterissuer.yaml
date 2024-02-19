@@ -1,0 +1,16 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: CLUSTER_ISSUER
+spec:
+  acme:
+   email:aben.george@searce.com
+   server: https://acme-v02.api.letsencrypt.org/directory
+   privateKeySecretRef:
+    name: letsencrypt-prod
+  solvers:
+  - dns01:
+     cloudDNS:
+          # The ID of the GCP project
+       project:ce-ps-3team
+       hostedZoneName:polygon-test-aben
