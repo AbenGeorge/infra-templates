@@ -90,39 +90,39 @@ module "vpc_network" {
 ############################
 ##  GKE Standard Cluster  ##
 ############################
-module "gke_standard_cluster" {
-  source = "./modules/gke_cluster/standard"
+# module "gke_standard_cluster" {
+#   source = "./modules/gke_cluster/standard"
 
-  # Product specific values
-  project = var.project_id
-  env     = var.env
+#   # Product specific values
+#   project = var.project_id
+#   env     = var.env
 
-  project_id = var.project_id
-  location   = var.location
-  network    = module.vpc_network.network_name
-  subnetwork = module.vpc_network.subnetworks[0].name
-  gke_service_account = local.terraform_service_account
+#   project_id = var.project_id
+#   location   = var.location
+#   network    = module.vpc_network.network_name
+#   subnetwork = module.vpc_network.subnetworks[0].name
+#   gke_service_account = local.terraform_service_account
 
-  cluster_name                  = "${var.testing_id}-cluster"
-  gateway_api_config            = var.gateway_api_config
-  gke_master_cidr_block         = var.gke_master_cidr_block
-  minimum_cpu                   = var.minimum_cpu
-  minimum_memory                = var.minimum_memory
-  cluster_secondary_range_name  = var.cluster_secondary_range_name
-  services_secondary_range_name = var.services_secondary_range_name
-  master_authorized_networks = flatten([[
-    {
-      cidr_block   = format("%s/%s", data.external.whatismyip.result["internet_ip"], 24)
-      display_name = "deployer_cidr"
-    }
-  ], var.master_authorized_networks])
-  node_pool_name     = "${var.testing_id}-node-pool"
-  node_workload      = var.node_workload
-  initial_node_count = 1
-  depends_on = [
-    module.vpc_network
-  ]
-}
+#   cluster_name                  = "${var.testing_id}-cluster"
+#   gateway_api_config            = var.gateway_api_config
+#   gke_master_cidr_block         = var.gke_master_cidr_block
+#   minimum_cpu                   = var.minimum_cpu
+#   minimum_memory                = var.minimum_memory
+#   cluster_secondary_range_name  = var.cluster_secondary_range_name
+#   services_secondary_range_name = var.services_secondary_range_name
+#   master_authorized_networks = flatten([[
+#     {
+#       cidr_block   = format("%s/%s", data.external.whatismyip.result["internet_ip"], 24)
+#       display_name = "deployer_cidr"
+#     }
+#   ], var.master_authorized_networks])
+#   node_pool_name     = "${var.testing_id}-node-pool"
+#   node_workload      = var.node_workload
+#   initial_node_count = 1
+#   depends_on = [
+#     module.vpc_network
+#   ]
+# }
 
 # module "https_target_proxy" {
 #   source    = "./modules/map_to_ingress"
@@ -133,25 +133,33 @@ module "gke_standard_cluster" {
 #############################
 ##  GKE Autopilot Cluster  ##
 #############################
-# module "gke_autopilot_cluster" {
-#   source = "./modules/gke_cluster/autopilot"
+module "gke_autopilot_cluster" {
+  source = "./modules/gke_cluster/autopilot"
 
-#   project = var.project_id
-#   env     = var.env
+  project = var.project_id
+  env     = var.env
 
-#   project_id                    = var.project_id
-#   location                      = var.location
-#   network                       = module.vpc_network.network_id
-#   subnetwork                    = module.vpc_network.subnetworks[0].name
-#   cluster_name                  = var.gke_cluster_name
-#   gke_master_cidr_block         = var.gke_master_cidr_block
-#   cluster_secondary_range_name  = var.cluster_secondary_range_name
-#   services_secondary_range_name = var.services_secondary_range_name
-#   master_authorized_networks    = var.master_authorized_networks
-#   depends_on = [
-#     module.vpc_network
-#   ]
-# }
+  project_id                    = var.project_id
+  location                      = var.location
+  network                       = module.vpc_network.network_id
+  subnetwork                    = module.vpc_network.subnetworks[0].name
+  minimum_cpu                   = var.minimum_cpu
+  minimum_memory                = var.minimum_memory
+  cluster_name                  = var.gke_cluster_name
+  gke_master_cidr_block         = var.gke_master_cidr_block
+  cluster_secondary_range_name  = var.cluster_secondary_range_name
+  services_secondary_range_name = var.services_secondary_range_name
+  master_authorized_networks    = flatten([[
+    {
+      cidr_block   = format("%s/%s", data.external.whatismyip.result["internet_ip"], 24)
+      display_name = "deployer_cidr"
+    }
+  ], var.master_authorized_networks])
+  gke_service_account = local.terraform_service_account
+  depends_on = [
+    module.vpc_network
+  ]
+}
 
 
 ##################################

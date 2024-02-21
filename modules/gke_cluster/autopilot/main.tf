@@ -5,6 +5,11 @@ data "google_container_engine_versions" "version" {
   version_prefix = var.gke_version_prefix
 }
 
+data "google_service_account" "node_service_account" {
+  project = var.project_id
+  account_id = var.gke_service_account
+}
+
 
 resource "google_container_cluster" "gke_cluster" {
   provider = google-beta
@@ -59,7 +64,6 @@ resource "google_container_cluster" "gke_cluster" {
   #   }
   # }
 
-
   # dns_config {
   #   cluster_dns        = "CLOUD_DNS"
   #   cluster_dns_scope  = "CLUSTER_SCOPE"
@@ -95,13 +99,25 @@ resource "google_container_cluster" "gke_cluster" {
     enabled = true
   }
 
-#  node_config {
-#     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
-#     service_account = var.gke_service_account
-#     oauth_scopes = [
-#       "https://www.googleapis.com/auth/cloud-platform"
-#     ]
-#  }
+ node_config {
+    # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
+    service_account = data.google_service_account.node_service_account.email
+    oauth_scopes = [
+      "https://www.googleapis.com/auth/cloud-platform"
+    ]
+ }
+
+ cluster_autoscaling {
+    auto_provisioning_defaults {
+      min_cpu_platform = var.nap_min_cpu_platform
+      oauth_scopes = var.nap_oauth_scopes
+      service_account = data.google_service_account.node_service_account.email
+      # var.gke_service_account
+      # module.service_accounts.email
+      # google_service_account.service_account.email
+      disk_type = "pd-balanced"
+    }
+  }
 
   # node_pool_auto_config {
   #   network_tags {
@@ -115,6 +131,7 @@ resource "google_container_cluster" "gke_cluster" {
   protect_config {
     workload_vulnerability_mode = "BASIC"
   }
+
   security_posture_config {
     mode               = "BASIC"
     vulnerability_mode = "VULNERABILITY_BASIC"

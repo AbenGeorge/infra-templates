@@ -78,9 +78,50 @@ variable "master_authorized_networks" {
   }))
 }
 
+variable "gke_service_account" {
+  type = string
+  description = "The Google Cloud Platform Service Account to be used by the node VMs."
+}
 
+variable "autoscaling_enabled" {
+  description = "Whether node auto-provisioning is enabled"
+  type        = bool
+  default     = true
+}
 
+variable "nap_min_cpu_platform" {
+  description = "Minimum CPU platform to be used by this instance"
+  type        = string
+  default     = "Intel Ivy Bridge"
+}
 
+variable "nap_oauth_scopes" {
+  description = "Scopes that are used by NAP when creating node pools."
+  type        = list(string)
+  default     = ["https://www.googleapis.com/auth/cloud-platform"]
+}
 
+variable "minimum_cpu" {
+  type        = number
+  description = "The minimum CPU required for autoscaling"
+  default     = 110
+}
 
+variable "maximum_cpu" {
+  type        = number
+  description = "The maximum CPU required for autoscaling"
+  default     = 500
+}
+
+variable "minimum_memory" {
+  type        = number
+  description = "The minimum memory required for autoscaling"
+  default     = 420
+}
+
+variable "maximum_memory" {
+  type        = number
+  description = "The maximum memory required for autoscaling"
+  default     = 2500
+}
 

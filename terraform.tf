@@ -57,6 +57,11 @@ provider "google" {
   request_timeout = "60s"
 }
 
+provider "google-beta" {
+  project         = local.terraform_project_id
+  access_token    = data.google_service_account_access_token.default.access_token
+  request_timeout = "60s"
+}
 # data "google_client_config" "provider" {}
 
 # data "google_container_cluster" "gke_cluster" {
